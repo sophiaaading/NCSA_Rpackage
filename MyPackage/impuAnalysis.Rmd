@@ -1,0 +1,263 @@
+---
+title: "Untitled"
+author: "Sophia Ding"
+date: "7/15/2019"
+output: html_document
+---
+
+```{r, message=FALSE}
+dataset <- read.delim("~/Desktop/dataset.s010")
+library("imputeTS")
+library("MyPackage")
+library("zoo")
+library("varhandle")
+library("hydroGOF")
+library("FSMUMI")
+library("MLmetrics")
+```
+imputeTS package; linear; 5 Missing Value (smooth)
+```{r}
+cleandata = clean(dataset)
+data = aList(cleandata)
+impuGV <- naInsert(data[[4]])
+t <- impuGV[,1]
+x0_smooth <- x_smooth <- y_smooth <- zoo(unfactor(impuGV[,3]), t)[c(422:709)]
+t1_smooth = index(x0_smooth)
+
+trueValue_smooth <- x_smooth[c(131:135)]
+x_smooth[c(131:135)] <- NA
+y_smooth[c(131:135)] <- NA
+id.na <- which(is.na(x_smooth))
+
+fit1_smooth <- na_interpolation(x_smooth, option = "linear", maxgap = Inf)
+imputedValue1_smooth <- fit1_smooth[131:135]
+tv1_smooth <- vector()
+iv1_smooth <- vector()
+sum1_smooth = 0
+for (i in 1:5) {
+  tv1_smooth[i] = as.numeric(trueValue_smooth[i])
+  iv1_smooth[i] = as.numeric(imputedValue1_smooth[i])
+  sum1_smooth = sum1_smooth + abs(iv1_smooth[i]-tv1_smooth[i])
+}
+mad1_smooth = sum1_smooth/5
+rmse1_smooth = rmse(tv1_smooth,iv1_smooth)
+mape1_smooth = MAPE(iv1_smooth,tv1_smooth)*100
+ioa1_smooth = d(iv1_smooth,tv1_smooth)
+fb1_smooth = compute.fb(iv1_smooth,tv1_smooth,verbose = F)
+a = rbind(mad1_smooth, rmse1_smooth, mape1_smooth, ioa1_smooth, fb1_smooth)
+a
+
+#plot
+plot(x0_smooth, col = "grey", main = "na_interpolation linear", xlab = "DisplayTime", ylab = "GlucoseValue")
+lines(x_smooth)
+points(t1_smooth[id.na], x0_smooth[id.na], col = "blue", pch = 19)
+points(t1_smooth[id.na], fit1_smooth[id.na], col = "red", pch = 17)
+legend("topright", legend = c("true values", "imputed values"), col = c("blue", "red"), pch = c(19,17))
+```
+imputeTS package; linear; 5 Missing Value (peak)
+```{r}
+x0_peak <- x_peak <- y_peak <- zoo(unfactor(impuGV[,3]), t)[c(422:709)]
+t1_peak = index(x0_peak)
+
+trueValue_peak <- x_peak[c(157:161)]
+x_peak[c(157:161)] <- NA
+y_peak[c(157:161)] <- NA
+id.na <- which(is.na(x_peak))
+
+fit1_peak <- na_interpolation(x_peak, option = "linear", maxgap = Inf)
+imputedValue1_peak <- fit1_peak[157:161]
+tv1_peak <- vector()
+iv1_peak <- vector()
+sum1_peak = 0
+for (i in 1:5) {
+  tv1_peak[i] = as.numeric(trueValue_peak[i])
+  iv1_peak[i] = as.numeric(imputedValue1_peak[i])
+  sum1_peak = sum1_peak + abs(iv1_peak[i]-tv1_peak[i])
+}
+mad1_peak = sum1_peak/5
+rmse1_peak = rmse(tv1_peak,iv1_peak)
+mape1_peak = MAPE(iv1_peak,tv1_peak)*100
+ioa1_peak = d(iv1_peak,tv1_peak)
+fb1_peak = compute.fb(iv1_peak,tv1_peak,verbose = F)
+b = rbind(mad1_peak, rmse1_peak, mape1_peak, ioa1_peak, fb1_peak)
+b
+
+#plot
+plot(x0_peak, col = "grey", main = "na_interpolation linear", xlab = "DisplayTime", ylab = "GlucoseValue")
+lines(x_peak)
+points(t1_peak[id.na], x0_peak[id.na], col = "blue", pch = 19)
+points(t1_peak[id.na], fit1_peak[id.na], col = "red", pch = 17)
+legend("topright", legend = c("true values", "imputed values"), col = c("blue", "red"), pch = c(19,17))
+```
+imputeTS package; linear; 5 Missing Value (bottom)
+```{r}
+x0_bottom <- x_bottom <- y_bottom <- zoo(unfactor(impuGV[,3]), t)[c(422:709)]
+t1_bottom = index(x0_bottom)
+
+trueValue_bottom <- x_bottom[c(235:239)]
+x_bottom[c(235:239)] <- NA
+y_bottom[c(235:239)] <- NA
+id.na <- which(is.na(x_bottom))
+
+fit1_bottom <- na_interpolation(x_bottom, option = "linear", maxgap = Inf)
+imputedValue1_bottom <- fit1_bottom[235:239]
+tv1_bottom <- vector()
+iv1_bottom <- vector()
+sum1_bottom = 0
+for (i in 1:5) {
+  tv1_bottom[i] = as.numeric(trueValue_bottom[i])
+  iv1_bottom[i] = as.numeric(imputedValue1_bottom[i])
+  sum1_bottom = sum1_bottom + abs(iv1_bottom[i]-tv1_bottom[i])
+}
+mad1_bottom = sum1_bottom/5
+rmse1_bottom = rmse(tv1_bottom,iv1_bottom)
+mape1_bottom = MAPE(iv1_bottom,tv1_bottom)*100
+ioa1_bottom = d(iv1_bottom,tv1_bottom)
+fb1_bottom = compute.fb(iv1_bottom,tv1_bottom,verbose = F)
+c = rbind(mad1_bottom, rmse1_bottom, mape1_bottom, ioa1_bottom, fb1_bottom)
+c
+
+#plot
+plot(x0_bottom, col = "grey", main = "na_interpolation linear", xlab = "DisplayTime", ylab = "GlucoseValue")
+lines(x_bottom)
+points(t1_bottom[id.na], x0_bottom[id.na], col = "blue", pch = 19)
+points(t1_bottom[id.na], fit1_bottom[id.na], col = "red", pch = 17)
+legend("topright", legend = c("true values", "imputed values"), col = c("blue", "red"), pch = c(19,17))
+```
+imputation summary table for na_interpolation(linear)
+```{r}
+mad1 = (mad1_smooth + mad1_peak + mad1_bottom) / 3
+rmse1 = (rmse1_smooth + rmse1_peak + rmse1_bottom) / 3 
+mape1 = (mape1_smooth + mape1_peak + rmse1_bottom) / 3
+ioa1 = (ioa1_smooth + ioa1_bottom + ioa1_peak) / 3
+fb1 = (fb1_smooth + fb1_bottom + fb1_bottom) / 3
+standard = c("MAD", "RMSE", "MAPE", "IOA", "FB")
+goodnessOfFit = c(mad1, rmse1, mape1, ioa1, fb1)
+st = data.frame(rbind(standard, goodnessOfFit))
+st
+```
+
+------------------------------------------------------------------------------------------------
+
+imputeTS package; linear; 10 Missing Value (smooth)
+```{r}
+cleandata = clean(dataset)
+data = aList(cleandata)
+impuGV <- naInsert(data[[1]])
+t <- impuGV[,1]
+x0_smooth <- x_smooth <- y_smooth <- zoo(unfactor(impuGV[,3]), t)[c(422:709)]
+t1_smooth = index(x0_smooth)
+
+trueValue_smooth <- x_smooth[c(131:140)]
+x_smooth[c(131:140)] <- NA
+y_smooth[c(131:140)] <- NA
+id.na <- which(is.na(x_smooth))
+
+fit1_smooth <- na_interpolation(x_smooth, option = "linear", maxgap = Inf)
+imputedValue1_smooth <- fit1_smooth[131:140]
+tv1_smooth <- vector()
+iv1_smooth <- vector()
+sum1_smooth = 0
+for (i in 1:10) {
+  tv1_smooth[i] = as.numeric(trueValue_smooth[i])
+  iv1_smooth[i] = as.numeric(imputedValue1_smooth[i])
+  sum1_smooth = sum1_smooth + abs(iv1_smooth[i]-tv1_smooth[i])
+}
+mad1_smooth = sum1_smooth/10
+rmse1_smooth = rmse(tv1_smooth,iv1_smooth)
+mape1_smooth = MAPE(iv1_smooth,tv1_smooth)*100
+ioa1_smooth = d(iv1_smooth,tv1_smooth)
+fb1_smooth = compute.fb(iv1_smooth,tv1_smooth,verbose = F)
+a = rbind(mad1_smooth, rmse1_smooth, mape1_smooth, ioa1_smooth, fb1_smooth)
+a
+
+#plot
+plot(x0_smooth, col = "grey", main = "na_interpolation linear", xlab = "DisplayTime", ylab = "GlucoseValue")
+lines(x_smooth)
+points(t1_smooth[id.na], x0_smooth[id.na], col = "blue", pch = 19)
+points(t1_smooth[id.na], fit1_smooth[id.na], col = "red", pch = 17)
+legend("topright", legend = c("true values", "imputed values"), col = c("blue", "red"), pch = c(19,17))
+```
+imputeTS package; linear; 10 Missing Value (peak)
+```{r}
+x0_peak <- x_peak <- y_peak <- zoo(unfactor(impuGV[,3]), t)[c(422:709)]
+t1_peak = index(x0_peak)
+
+trueValue_peak <- x_peak[c(155:164)]
+x_peak[c(155:164)] <- NA
+y_peak[c(155:164)] <- NA
+id.na <- which(is.na(x_peak))
+
+fit1_peak <- na_interpolation(x_peak, option = "linear", maxgap = Inf)
+imputedValue1_peak <- fit1_peak[155:164]
+tv1_peak <- vector()
+iv1_peak <- vector()
+sum1_peak = 0
+for (i in 1:10) {
+  tv1_peak[i] = as.numeric(trueValue_peak[i])
+  iv1_peak[i] = as.numeric(imputedValue1_peak[i])
+  sum1_peak = sum1_peak + abs(iv1_peak[i]-tv1_peak[i])
+}
+mad1_peak = sum1_peak/10
+rmse1_peak = rmse(tv1_peak,iv1_peak)
+mape1_peak = MAPE(iv1_peak,tv1_peak)*100
+ioa1_peak = d(iv1_peak,tv1_peak)
+fb1_peak = compute.fb(iv1_peak,tv1_peak,verbose = F)
+b = rbind(mad1_peak, rmse1_peak, mape1_peak, ioa1_peak, fb1_peak)
+b
+
+#plot
+plot(x0_peak, col = "grey", main = "na_interpolation linear", xlab = "DisplayTime", ylab = "GlucoseValue")
+lines(x_peak)
+points(t1_peak[id.na], x0_peak[id.na], col = "blue", pch = 19)
+points(t1_peak[id.na], fit1_peak[id.na], col = "red", pch = 17)
+legend("topright", legend = c("true values", "imputed values"), col = c("blue", "red"), pch = c(19,17))
+```
+imputeTS package; linear; 10 Missing Value (bottom)
+```{r}
+x0_bottom <- x_bottom <- y_bottom <- zoo(unfactor(impuGV[,3]), t)[c(422:709)]
+t1_bottom = index(x0_bottom)
+
+trueValue_bottom <- x_bottom[c(234:243)]
+x_bottom[c(234:243)] <- NA
+y_bottom[c(234:243)] <- NA
+id.na <- which(is.na(x_bottom))
+
+fit1_bottom <- na_interpolation(x_bottom, option = "linear", maxgap = Inf)
+imputedValue1_bottom <- fit1_bottom[234:243]
+tv1_bottom <- vector()
+iv1_bottom <- vector()
+sum1_bottom = 0
+for (i in 1:10) {
+  tv1_bottom[i] = as.numeric(trueValue_bottom[i])
+  iv1_bottom[i] = as.numeric(imputedValue1_bottom[i])
+  sum1_bottom = sum1_bottom + abs(iv1_bottom[i]-tv1_bottom[i])
+}
+mad1_bottom = sum1_bottom/10
+rmse1_bottom = rmse(tv1_bottom,iv1_bottom)
+mape1_bottom = MAPE(iv1_bottom,tv1_bottom)*100
+ioa1_bottom = d(iv1_bottom,tv1_bottom)
+fb1_bottom = compute.fb(iv1_bottom,tv1_bottom,verbose = F)
+c = rbind(mad1_bottom, rmse1_bottom, mape1_bottom, ioa1_bottom, fb1_bottom)
+c
+
+#plot
+plot(x0_bottom, col = "grey", main = "na_interpolation linear", xlab = "DisplayTime", ylab = "GlucoseValue")
+lines(x_bottom)
+points(t1_bottom[id.na], x0_bottom[id.na], col = "blue", pch = 19)
+points(t1_bottom[id.na], fit1_bottom[id.na], col = "red", pch = 17)
+legend("topright", legend = c("true values", "imputed values"), col = c("blue", "red"), pch = c(19,17))
+```
+imputation summary table for na_interpolation(linear)
+```{r}
+mad1 = (mad1_smooth + mad1_peak + mad1_bottom) / 3
+rmse1 = (rmse1_smooth + rmse1_peak + rmse1_bottom) / 3 
+mape1 = (mape1_smooth + mape1_peak + rmse1_bottom) / 3
+ioa1 = (ioa1_smooth + ioa1_bottom + ioa1_peak) / 3
+fb1 = (fb1_smooth + fb1_bottom + fb1_bottom) / 3
+standard = c("MAD", "RMSE", "MAPE", "IOA", "FB")
+goodnessOfFit = c(mad1, rmse1, mape1, ioa1, fb1)
+st = data.frame(rbind(standard, goodnessOfFit))
+st
+```
+

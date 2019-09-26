@@ -1,0 +1,24 @@
+---
+title: "clean"
+author: "Sophia Ding"
+date: "7/9/2019"
+output: html_document
+---
+
+```{r,message=FALSE}
+dataset <- read.delim("~/Desktop/dataset.s010")
+library("MyPackage")
+library("zoo")
+library("varhandle")
+```
+```{r}
+cleandata = clean(dataset)
+data = aList(cleandata)
+```
+```{r}
+summaryTable(dataset)
+```
+```{r}
+summaryTable(cleandata)
+```
+
