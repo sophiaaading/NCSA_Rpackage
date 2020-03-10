@@ -1,0 +1,125 @@
+---
+title: "comparison"
+output: html_document
+---
+
+```{r}
+library("openxlsx")
+```
+
+Compating fractional biases for all seven methods
+```{r}
+l=c('5','10','20','25','50','100')
+plot(NULL,NULL, xaxt='n', xlim = c(1,8), ylim = c(-0.05,0.05),xlab = 'Gap Size', ylab = 'Fractional Bias', main = 'Comparing Fractional Bias')
+axis(1,at=seq(1:6),labels = l)
+legend("topleft", c('zoo:na.approx', 'zoo:na.spline', 'imputeTS:na_interpolate_linear', 'imputeTS:na_interpolate_spline', 'imputeTS:na_interpolate_stine', 'imputeTS:na_kalman', 'imputeTS:na_locf'), col = c('red','blue','green','purple', 'yellow', 'orange', 'black'),lwd=2,cex=.75)
+lines(frac_bias_approx, col = 'red',lwd=2)
+lines(frac_bias_spline_zoo, col = 'blue',lwd=2)
+lines(frac_bias_linear, col = 'green',lwd=2)
+lines(frac_bias_spline_imputeTS, col = 'purple',lwd=2)
+lines(frac_bias_stine, col = 'yellow',lwd=2)
+lines(frac_bias_kalman, col = 'orange',lwd=2)
+lines(frac_bias_locf, col = 'black',lwd=2)
+
+fb_pre_dia = data.frame(frac_bias_approx, frac_bias_spline_zoo, frac_bias_linear, frac_bias_spline_imputeTS, frac_bias_stine, frac_bias_kalman, frac_bias_locf)
+
+#setwd("/Users/yuxiding/Desktop")
+#write.xlsx(fb_pre_dia, file = "fb_pre_dia.xlsx", sheetName = "fb_pre_dia", col.names = TRUE, row.names = TRUE, append = FALSE)
+
+cat("\n\nFractional Bias Values for na.approx are:\n",frac_bias_approx)
+cat("\n\nFractional Bias Values for na.spline are:\n",frac_bias_spline_zoo)
+cat("\n\nFractional Bias Values for na.interp are:\n",frac_bias_linear)
+cat("\n\nFractional Bias Values for na.approx are:\n",frac_bias_spline_imputeTS)
+cat("\n\nFractional Bias Values for na.approx are:\n",frac_bias_stine)
+cat("\n\nFractional Bias Values for na.approx are:\n",frac_bias_kalman)
+cat("\n\nFractional Bias Values for na.approx are:\n",frac_bias_locf)
+
+```
+
+Compating index of agreement for all seven methods
+```{r}
+l=c('5','10','20','25','50','100')
+plot(NULL,NULL, xaxt='n', xlim = c(1,8), ylim = c(0.8,1.2),xlab = 'Gap Size', ylab = 'Index of Agreement', main = 'Comparing IOA')
+axis(1,at=seq(1:6),labels = l)
+legend("topleft", c('zoo:na.approx', 'zoo:na.spline', 'imputeTS:na_interpolate_linear', 'imputeTS:na_interpolate_spline', 'imputeTS:na_interpolate_stine', 'imputeTS:na_kalman', 'imputeTS:na_locf'), col = c('red','blue','green','purple', 'yellow', 'orange', 'black'),lwd=2,cex=.75)
+lines(ioa_approx, col = 'red',lwd=2)
+lines(ioa_spline_zoo, col = 'blue',lwd=2)
+lines(ioa_linear, col = 'green',lwd=2)
+lines(ioa_spline_imputeTS, col = 'purple',lwd=2)
+lines(ioa_stine, col = 'yellow',lwd=2)
+lines(ioa_kalman, col = 'orange',lwd=2)
+lines(ioa_locf, col = 'black',lwd=2)
+ioa_pre_dia = data.frame(ioa_approx, ioa_spline_zoo, ioa_linear, ioa_spline_imputeTS, ioa_stine, ioa_kalman, ioa_locf)
+#setwd("/Users/yuxiding/Desktop")
+#write.xlsx(ioa_pre_dia, file = "ioa_pre_dia.xlsx", sheetName = "ioa_pre_dia", col.names = TRUE, row.names = TRUE, append = FALSE)
+cat("\n\nIndex of Agreement for zoo:na.approx are:\n", ioa_approx)
+cat("\n\nIndex of Agreement for zoo:na.spline are:\n",ioa_spline_zoo)
+cat("\n\nIndex of Agreement for imputeTS:na_interpolate_linear are:\n",ioa_linear)
+cat("\n\nIndex of Agreement for imputeTS:na_interpolate_spline are:\n",ioa_spline_imputeTS)
+cat("\n\nIndex of Agreement for imputeTS:na_interpolate_stine are:\n",ioa_stine)
+cat("\n\nIndex of Agreement for imputeTS:na_kalman are:\n",ioa_kalman)
+cat("\n\nIndex of Agreement for imputeTS:na_locf are:\n",ioa_locf)
+
+```
+
+Compating RMSE of agreement for all seven methods
+```{r}
+l=c('5','10','20','25','50','100')
+plot(NULL,NULL, xaxt='n', xlim = c(1,8), ylim = c(0,15),xlab = 'Gap Size', ylab = 'RMSE', main = 'Comparing RMSE')
+axis(1,at=seq(1:6),labels = l)
+legend("topleft", c('zoo:na.approx', 'zoo:na.spline', 'imputeTS:na_interpolate_linear', 'imputeTS:na_interpolate_spline', 'imputeTS:na_interpolate_stine', 'imputeTS:na_kalman', 'imputeTS:na_locf'), col = c('red','blue','green','purple', 'yellow', 'orange', 'black'),lwd=2,cex=.75)
+lines(rmse_approx, col = 'red',lwd=2)
+lines(rmse_spline_zoo, col = 'blue',lwd=2)
+lines(rmse_linear, col = 'green',lwd=2)
+lines(rmse_spline_imputeTS, col = 'purple',lwd=2)
+lines(rmse_stine, col = 'yellow',lwd=2)
+lines(rmse_kalman, col = 'orange',lwd=2)
+lines(rmse_locf, col = 'black',lwd=2)
+rmse_pre_dia = data.frame(rmse_approx, rmse_spline_zoo, rmse_linear, rmse_spline_imputeTS, rmse_stine, rmse_kalman, rmse_locf)
+#setwd("/Users/yuxiding/Desktop")
+#write.xlsx(rmse_pre_dia, file = "rmse_pre_dia.xlsx", sheetName = "rmse_pre_dia", col.names = TRUE, row.names = TRUE, append = FALSE)
+cat("\n\nRMSE for zoo:na.approx are:\n",rmse_approx)
+cat("\n\nRMSE for zoo:na.spline are:\n",rmse_spline_zoo)
+cat("\n\nRMSE for imputeTS:na_interpolate_linear are:\n",rmse_linear)
+cat("\n\nRMSE for imputeTS:na_interpolate_spline are:\n",rmse_spline_imputeTS)
+cat("\n\nRMSE for imputeTS:na_interpolate_stine are:\n",rmse_stine)
+cat("\n\nRMSE for imputeTS:na_kalman are:\n",rmse_kalman)
+cat("\n\nRMSE for imputeTS:na_locf are:\n",rmse_locf)
+
+```
+
+Compating MAD of agreement for all seven methods
+```{r}
+l=c('5','10','20','25','50','100')
+plot(NULL,NULL, xaxt='n', xlim = c(1,8), ylim = c(17,21),xlab = 'Gap Size', ylab = 'MAD', main = 'Comparing MAD')
+axis(1,at=seq(1:6),labels = l)
+legend("topleft", c('zoo:na.approx', 'zoo:na.spline', 'imputeTS:na_interpolate_linear', 'imputeTS:na_interpolate_spline', 'imputeTS:na_interpolate_stine', 'imputeTS:na_kalman', 'imputeTS:na_locf'), col = c('red','blue','green','purple', 'yellow', 'orange', 'black'),lwd=2,cex=.75)
+lines(mad_approx, col = 'red',lwd=2)
+lines(mad_spline_zoo, col = 'blue',lwd=2)
+lines(mad_linear, col = 'green',lwd=2)
+lines(mad_spline_imputeTS, col = 'purple',lwd=2)
+lines(mad_stine, col = 'yellow',lwd=2)
+lines(mad_kalman, col = 'orange',lwd=2)
+lines(mad_locf, col = 'black',lwd=2)
+mad_pre_dia = data.frame(mad_approx, mad_spline_zoo, mad_linear, mad_spline_imputeTS, mad_stine, mad_kalman, mad_locf)
+mad_pre_dia
+#setwd("/Users/yuxiding/Desktop")
+#write.xlsx(mad_pre_dia, file = "mad_pre_dia.xlsx", sheetName = "mad_pre_dia", col.names = TRUE, row.names = TRUE, append = FALSE)
+cat("\n\nMAD for zoo:na.approx are:\n", mad_approx)
+cat("\n\nMAD for zoo:na.spline are:\n", mad_spline_zoo)
+cat("\n\nMAD for imputeTS:na_interpolate_linear are:\n", mad_linear)
+cat("\n\nMAD for imputeTS:na_interpolate_spline are:\n", mad_spline_imputeTS)
+cat("\n\nMAD for imputeTS:na_interpolate_stine are:\n", mad_stine)
+cat("\n\nMAD for imputeTS:na_kalman are:\n", mad_kalman)
+cat("\n\nMAD for imputeTS:na_locf are:\n", mad_locf)
+
+
+```
+
+```{r}
+imputable = data.frame(fb_pre_dia,ioa_pre_dia, rmse_pre_dia, mad_pre_dia)
+imputable
+#setwd("/Users/yuxiding/Desktop")
+#write.xlsx(imputable, file = "imputable_pre_dia.xlsx", sheetName = "imputable_pre_dia", col.names = TRUE, row.names = TRUE, append = FALSE)
+```
+

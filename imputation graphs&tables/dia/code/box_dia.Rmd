@@ -1,0 +1,206 @@
+---
+title: "box_fb_non_dia"
+output: html_document
+---
+
+Boxplots for Fractional Bias
+```{r}
+par(mfrow = c(2,3),cex.main=1, mar = c(7,4,2,2))
+boxplot(fractional_bias_approx_5,fractional_bias_spline_5_zoo, fractional_bias_linear_5, fractional_bias_spline_5_imputeTS, fractional_bias_stine_5, fractional_bias_kalman_5, fractional_bias_locf_5,
+        las = 2,
+        names = c('approx', 'spline(zoo)', 'linear', 'spline(TS)', 'stine', 'kalman', 'locf'),
+        col = c("red","blue","green","purple", "yellow", "orange", "sky blue"),
+        main = "Gap Size = 5",
+        ylim = c(0,0.0005))
+        #ylim = c(min(fractional_bias_approx_5,fractional_bias_spline_5_zoo, fractional_bias_linear_5, fractional_bias_spline_5_imputeTS, fractional_bias_stine_5, fractional_bias_kalman_5, fractional_bias_locf_5), max(fractional_bias_approx_5,fractional_bias_spline_5_zoo, fractional_bias_linear_5, fractional_bias_spline_5_imputeTS, fractional_bias_stine_5, fractional_bias_kalman_5, fractional_bias_locf_5))
+      
+boxplot(fractional_bias_approx_10,fractional_bias_spline_10_zoo, fractional_bias_linear_10, fractional_bias_spline_10_imputeTS, fractional_bias_stine_10, fractional_bias_kalman_10, fractional_bias_locf_10,
+        las = 2,
+        names = c('approx', 'spline(zoo)', 'linear', 'spline(TS)', 'stine', 'kalman', 'locf'),
+        col = c("red","blue","green","purple", "yellow", "orange", "sky blue"),
+        main = "Gap Size = 10",
+        ylim = c(0,0.002))
+
+boxplot(fractional_bias_approx_20,fractional_bias_spline_20_zoo, fractional_bias_linear_20, fractional_bias_spline_20_imputeTS, fractional_bias_stine_20, fractional_bias_kalman_20, fractional_bias_locf_20,
+        las = 2,
+        names = c('approx', 'spline(zoo)', 'linear', 'spline(TS)', 'stine', 'kalman', 'locf'),
+        col = c("red","blue","green","purple", "yellow", "orange", "sky blue"),
+        main = "Gap Size = 20",
+        ylim =  c(0,0.005))
+
+
+boxplot(fractional_bias_approx_25,fractional_bias_spline_25_zoo, fractional_bias_linear_25, fractional_bias_spline_25_imputeTS, fractional_bias_stine_25, fractional_bias_kalman_25, fractional_bias_locf_25,
+        las = 2,
+        names = c('approx', 'spline(zoo)', 'linear', 'spline(TS)', 'stine', 'kalman', 'locf'),
+        col = c("red","blue","green","purple", "yellow", "orange", "sky blue"),
+        main = "Gap Size = 25",
+        ylim =  c(0,0.006))
+
+boxplot(fractional_bias_approx_50,fractional_bias_spline_50_zoo, fractional_bias_linear_50, fractional_bias_spline_50_imputeTS, fractional_bias_stine_50, fractional_bias_kalman_50, fractional_bias_locf_50,
+        las = 2,
+        names = c('approx', 'spline(zoo)', 'linear', 'spline(TS)', 'stine', 'kalman', 'locf'),
+        col = c("red","blue","green","purple", "yellow", "orange", "sky blue"),
+        main = "Gap Size = 50",
+        ylim =  c(0,0.025))
+
+boxplot(fractional_bias_approx_100,fractional_bias_spline_100_zoo, fractional_bias_linear_100, fractional_bias_spline_100_imputeTS, fractional_bias_stine_100, fractional_bias_kalman_100, fractional_bias_locf_100,
+        las = 2,
+        names = c('approx', 'spline(zoo)', 'linear', 'spline(TS)', 'stine', 'kalman', 'locf'),
+        col = c("red","blue","green","purple", "yellow", "orange", "sky blue"),
+        main = "Gap Size = 100",
+        ylim =  c(0,0.08))
+
+mtext("Comparing Fractional Bias", side=1, line = -1.3, outer = TRUE,font=2)
+```
+
+Boxplots for Index of Agreement
+```{r}
+par(mfrow = c(2,3),cex.main=1, mar = c(7,4,2,2))
+boxplot(ioa_approx_5,ioa_spline_5_zoo, ioa_linear_5, ioa_spline_5_imputeTS, ioa_stine_5, ioa_kalman_5, ioa_locf_5,
+        las = 2,
+        names = c('approx', 'spline(zoo)', 'linear', 'spline(TS)', 'stine', 'kalman', 'locf'),
+        col = c("red","blue","green","purple", "yellow", "orange", "sky blue"),
+        main = "Gap Size = 5",
+        ylim = c(0.998,1))
+        #ylim = c(min(ioa_approx_5,ioa_spline_5_zoo, ioa_linear_5, ioa_spline_5_imputeTS, ioa_stine_5, ioa_kalman_5, ioa_locf_5), max(ioa_approx_5,ioa_spline_5_zoo, ioa_linear_5, ioa_spline_5_imputeTS, ioa_stine_5, ioa_kalman_5, ioa_locf_5)))
+      
+boxplot(ioa_approx_10,ioa_spline_10_zoo, ioa_linear_10, ioa_spline_10_imputeTS, ioa_stine_10, ioa_kalman_10, ioa_locf_10,
+        las = 2,
+        names = c('approx', 'spline(zoo)', 'linear', 'spline(TS)', 'stine', 'kalman', 'locf'),
+        col = c("red","blue","green","purple", "yellow", "orange", "sky blue"),
+        main = "Gap Size = 10",
+        ylim = c(0.993,1))
+
+boxplot(ioa_approx_20,ioa_spline_20_zoo, ioa_linear_20, ioa_spline_20_imputeTS, ioa_stine_20, ioa_kalman_20, ioa_locf_20,
+        las = 2,
+        names = c('approx', 'spline(zoo)', 'linear', 'spline(TS)', 'stine', 'kalman', 'locf'),
+        col = c("red","blue","green","purple", "yellow", "orange", "sky blue"),
+        main = "Gap Size = 20",
+        ylim =  c(0.98,1))
+
+
+boxplot(ioa_approx_25,ioa_spline_25_zoo, ioa_linear_25, ioa_spline_25_imputeTS, ioa_stine_25, ioa_kalman_25, ioa_locf_25,
+        las = 2,
+        names = c('approx', 'spline(zoo)', 'linear', 'spline(TS)', 'stine', 'kalman', 'locf'),
+        col = c("red","blue","green","purple", "yellow", "orange", "sky blue"),
+        main = "Gap Size = 25",
+        ylim =  c(0.97,1))
+
+boxplot(ioa_approx_50,ioa_spline_50_zoo, ioa_linear_50, ioa_spline_50_imputeTS, ioa_stine_50, ioa_kalman_50, ioa_locf_50,
+        las = 2,
+        names = c('approx', 'spline(zoo)', 'linear', 'spline(TS)', 'stine', 'kalman', 'locf'),
+        col = c("red","blue","green","purple", "yellow", "orange", "sky blue"),
+        main = "Gap Size = 50",
+        ylim =  c(0.89,1))
+
+boxplot(ioa_approx_100,ioa_spline_100_zoo, ioa_linear_100, ioa_spline_100_imputeTS, ioa_stine_100, ioa_kalman_100, ioa_locf_100,
+        las = 2,
+        names = c('approx', 'spline(zoo)', 'linear', 'spline(TS)', 'stine', 'kalman', 'locf'),
+        col = c("red","blue","green","purple", "yellow", "orange", "sky blue"),
+        main = "Gap Size = 100",
+        ylim =  c(0.6,1))
+
+mtext("Comparing Index of Agreement", side=1, line = -1.3, outer = TRUE,font=2)
+```
+
+Boxplots for RMSE
+```{r}
+par(mfrow = c(2,3),cex.main=1, mar = c(7,4,2,2))
+boxplot(rmse_approx_5,rmse_spline_5_zoo, rmse_linear_5, rmse_spline_5_imputeTS, rmse_stine_5, rmse_kalman_5, rmse_locf_5,
+        las = 2,
+        names = c('approx', 'spline(zoo)', 'linear', 'spline(TS)', 'stine', 'kalman', 'locf'),
+        col = c("red","blue","green","purple", "yellow", "orange", "sky blue"),
+        main = "Gap Size = 5",
+        ylim = c(0,2))
+        #ylim = c(min(rmse_approx_5,rmse_spline_5_zoo, rmse_linear_5, rmse_spline_5_imputeTS, rmse_stine_5, rmse_kalman_5, rmse_locf_5), max(rmse_approx_5,rmse_spline_5_zoo, rmse_linear_5, rmse_spline_5_imputeTS, rmse_stine_5, rmse_kalman_5, rmse_locf_5)))
+      
+boxplot(rmse_approx_10,rmse_spline_10_zoo, rmse_linear_10, rmse_spline_10_imputeTS, rmse_stine_10, rmse_kalman_10, rmse_locf_10,
+        las = 2,
+        names = c('approx', 'spline(zoo)', 'linear', 'spline(TS)', 'stine', 'kalman', 'locf'),
+        col = c("red","blue","green","purple", "yellow", "orange", "sky blue"),
+        main = "Gap Size = 10",
+        ylim = c(0,7))
+
+boxplot(rmse_approx_20,rmse_spline_20_zoo, rmse_linear_20, rmse_spline_20_imputeTS, rmse_stine_20, rmse_kalman_20, rmse_locf_20,
+        las = 2,
+        names = c('approx', 'spline(zoo)', 'linear', 'spline(TS)', 'stine', 'kalman', 'locf'),
+        col = c("red","blue","green","purple", "yellow", "orange", "sky blue"),
+        main = "Gap Size = 20",
+        ylim =  c(0,10))
+
+
+boxplot(rmse_approx_25,rmse_spline_25_zoo, rmse_linear_25, rmse_spline_25_imputeTS, rmse_stine_25, rmse_kalman_25, rmse_locf_25,
+        las = 2,
+        names = c('approx', 'spline(zoo)', 'linear', 'spline(TS)', 'stine', 'kalman', 'locf'),
+        col = c("red","blue","green","purple", "yellow", "orange", "sky blue"),
+        main = "Gap Size = 25",
+        ylim =  c(0,15))
+
+boxplot(rmse_approx_50,rmse_spline_50_zoo, rmse_linear_50, rmse_spline_50_imputeTS, rmse_stine_50, rmse_kalman_50, rmse_locf_50,
+        las = 2,
+        names = c('approx', 'spline(zoo)', 'linear', 'spline(TS)', 'stine', 'kalman', 'locf'),
+        col = c("red","blue","green","purple", "yellow", "orange", "sky blue"),
+        main = "Gap Size = 50",
+        ylim =  c(0,30))
+
+boxplot(rmse_approx_100,rmse_spline_100_zoo, rmse_linear_100, rmse_spline_100_imputeTS, rmse_stine_100, rmse_kalman_100, rmse_locf_100,
+        las = 2,
+        names = c('approx', 'spline(zoo)', 'linear', 'spline(TS)', 'stine', 'kalman', 'locf'),
+        col = c("red","blue","green","purple", "yellow", "orange", "sky blue"),
+        main = "Gap Size = 100",
+        ylim =  c(0,50))
+
+mtext("Comparing RMSE", side=1, line = -1.3, outer = TRUE,font=2)
+```
+
+Boxplots for MAD
+```{r}
+par(mfrow = c(2,3),cex.main=1, mar = c(7,4,2,2))
+boxplot(mad_approx_5,mad_spline_5_zoo, mad_linear_5, mad_spline_5_imputeTS, mad_stine_5, mad_kalman_5, mad_locf_5,
+        las = 2,
+        names = c('approx', 'spline(zoo)', 'linear', 'spline(TS)', 'stine', 'kalman', 'locf'),
+        col = c("red","blue","green","purple", "yellow", "orange", "sky blue"),
+        main = "Gap Size = 5",
+        ylim = c(17,20))
+        #ylim = c(min(mad_approx_5,mad_spline_5_zoo, mad_linear_5, mad_spline_5_imputeTS, mad_stine_5, mad_kalman_5, mad_locf_5), max(mad_approx_5,mad_spline_5_zoo, mad_linear_5, mad_spline_5_imputeTS, mad_stine_5, mad_kalman_5, mad_locf_5)))
+      
+boxplot(mad_approx_10,mad_spline_10_zoo, mad_linear_10, mad_spline_10_imputeTS, mad_stine_10, mad_kalman_10, mad_locf_10,
+        las = 2,
+        names = c('approx', 'spline(zoo)', 'linear', 'spline(TS)', 'stine', 'kalman', 'locf'),
+        col = c("red","blue","green","purple", "yellow", "orange", "sky blue"),
+        main = "Gap Size = 10",
+        ylim = c(17,20))
+
+boxplot(mad_approx_20,mad_spline_20_zoo, mad_linear_20, mad_spline_20_imputeTS, mad_stine_20, mad_kalman_20, mad_locf_20,
+        las = 2,
+        names = c('approx', 'spline(zoo)', 'linear', 'spline(TS)', 'stine', 'kalman', 'locf'),
+        col = c("red","blue","green","purple", "yellow", "orange", "sky blue"),
+        main = "Gap Size = 20",
+        ylim = c(17,20))
+
+
+boxplot(mad_approx_25,mad_spline_25_zoo, mad_linear_25, mad_spline_25_imputeTS, mad_stine_25, mad_kalman_25, mad_locf_25,
+        las = 2,
+        names = c('approx', 'spline(zoo)', 'linear', 'spline(TS)', 'stine', 'kalman', 'locf'),
+        col = c("red","blue","green","purple", "yellow", "orange", "sky blue"),
+        main = "Gap Size = 25",
+        ylim = c(15,25))
+
+boxplot(mad_approx_50,mad_spline_50_zoo, mad_linear_50, mad_spline_50_imputeTS, mad_stine_50, mad_kalman_50, mad_locf_50,
+        las = 2,
+        names = c('approx', 'spline(zoo)', 'linear', 'spline(TS)', 'stine', 'kalman', 'locf'),
+        col = c("red","blue","green","purple", "yellow", "orange", "sky blue"),
+        main = "Gap Size = 50",
+        ylim = c(15,25))
+
+boxplot(mad_approx_100,mad_spline_100_zoo, mad_linear_100, mad_spline_100_imputeTS, mad_stine_100, mad_kalman_100, mad_locf_100,
+        las = 2,
+        names = c('approx', 'spline(zoo)', 'linear', 'spline(TS)', 'stine', 'kalman', 'locf'),
+        col = c("red","blue","green","purple", "yellow", "orange", "sky blue"),
+        main = "Gap Size = 100",
+        ylim = c(15,25))
+
+mtext("Comparing MAD", side=1, line = -1.3, outer = TRUE,font=2)
+```
+
+

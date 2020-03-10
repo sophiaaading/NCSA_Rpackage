@@ -1,0 +1,435 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+series <- read.delim("~/Desktop/dataset.s010")
+series = na.omit(series)
+library(varhandle)
+library(imputeTS)
+library(zoo)
+library(DTWBI)
+library(openair)
+```
+Non-diabete 
+na.linear error lists for plotting
+```{r}
+mad_linear = c()
+frac_bias_linear = c()
+rmse_linear = c()
+ioa_linear = c()
+```
+
+Non-diabete "1636-69-048"
+Method = {imputeTS} linear
+```{r}
+non_dia = subset(series, series[,3] == "1636-69-048")
+```
+
+Gap = 5
+```{r}
+mad_linear_5 = c()
+fractional_bias_linear_5 = c()
+rmse_linear_5 = c()
+ioa_linear_5 = c()
+```
+
+```{r}
+seed_points <- sample(1:1500, 100, replace = FALSE)
+```
+
+```{r}
+for (i in seed_points) { 
+  series_new = non_dia
+  for (j in 0:4) { 
+    series_new$GlucoseValue[i+j] = NA
+  }
+  series_new$GlucoseValue = na_interpolation(unfactor(series_new$GlucoseValue), option = "linear", maxgap = Inf)
+    
+  #calculating mean absolute difference
+  temp1 = mad(series_new$GlucoseValue)
+  mad_linear_5 = c(mad_linear_5,temp1)
+    
+  #calculating fractional bias
+  temp2 = compute.fb(series_new$GlucoseValue, unfactor(non_dia$GlucoseValue))
+  fractional_bias_linear_5 = c(fractional_bias_linear_5, temp2)
+    
+  #calculating RMSE
+  temp3 = compute.rmse(series_new$GlucoseValue, unfactor(non_dia$GlucoseValue))
+  rmse_linear_5 = c(rmse_linear_5,temp3)
+  
+  #calculatind IOA
+  x = data.frame("real" = unfactor(non_dia$GlucoseValue), 'imputed' = series_new$GlucoseValue)
+  temp4 = modStats(x,mod = "imputed",obs = "real", statistic = c("IOA"))
+  ioa_linear_5 = c(ioa_linear_5, temp4$IOA)
+}
+```
+ 
+```{r}
+mean_fractional_bias_linear_5 = mean(fractional_bias_linear_5)
+cat("Mean Fractional Bias for na.linear method with Gap Value of 5 is ",mean_fractional_bias_linear_5, "thats is, ",mean_fractional_bias_linear_5*100,"%\n\n")
+mean_rmse_linear_5 = mean(rmse_linear_5)
+cat("Mean RMSE for na.linear method with Gap Value of 5 is ",mean_rmse_linear_5, "thats is, ",mean_rmse_linear_5*100,"%\n\n")
+mean_ioa_linear_5 = mean(ioa_linear_5)
+cat("Mean IOA for na.linear method with Gap Value of 5 is ",mean_ioa_linear_5, "thats is, ",mean_ioa_linear_5*100,"%\n\n")
+mean_mad_linear_5 = mean(mad_linear_5)
+cat("Mean MAD for na.linear method with Gap Value of 5 is ",mean_mad_linear_5,"\n\n")
+mad_linear = c(mad_linear,mean_mad_linear_5)
+frac_bias_linear = c(frac_bias_linear,mean_fractional_bias_linear_5)
+rmse_linear = c(rmse_linear,mean_rmse_linear_5)
+ioa_linear = c(ioa_linear, mean_ioa_linear_5)
+rm(temp1)
+rm(temp2)
+rm(temp3)
+rm(temp4)
+rm(x)
+rm(i)
+rm(j)
+```
+
+###########################################################################################################
+
+Method = {imputeTS} linear
+Gap = 10
+
+Non-diabete "1636-69-048"
+Method = {zoo}na.linear
+```{r}
+non_dia = subset(series, series[,3] == "1636-69-048")
+```
+
+
+```{r}
+mad_linear_10 = c()
+fractional_bias_linear_10 = c()
+rmse_linear_10 = c()
+ioa_linear_10 = c()
+```
+
+```{r}
+for (i in seed_points) { 
+  series_new = non_dia
+  for (j in 0:9) { 
+    series_new$GlucoseValue[i+j] = NA
+  }
+  series_new$GlucoseValue = na_interpolation(unfactor(series_new$GlucoseValue), option = "linear", maxgap = Inf)
+    
+  #calculating mean absolute difference
+  temp1 = mad(series_new$GlucoseValue)
+  mad_linear_10 = c(mad_linear_10,temp1)
+    
+  #calculating fractional bias
+  temp2 = compute.fb(series_new$GlucoseValue, unfactor(non_dia$GlucoseValue))
+  fractional_bias_linear_10 = c(fractional_bias_linear_10, temp2)
+    
+  #calculating RMSE
+  temp3 = compute.rmse(series_new$GlucoseValue, unfactor(non_dia$GlucoseValue))
+  rmse_linear_10 = c(rmse_linear_10,temp3)
+  
+  #calculatind IOA
+  x = data.frame("real" = unfactor(non_dia$GlucoseValue), 'imputed' = series_new$GlucoseValue)
+  temp4 = modStats(x,mod = "imputed",obs = "real", statistic = c("IOA"))
+  ioa_linear_10 = c(ioa_linear_10, temp4$IOA)
+}
+```
+
+```{r}
+mean_fractional_bias_linear_10 = mean(fractional_bias_linear_10)
+cat("Mean Fractional Bias for na.linear method with Gap Value of 10 is ",mean_fractional_bias_linear_10, "thats is, ",mean_fractional_bias_linear_10*100,"%\n\n")
+mean_rmse_linear_10 = mean(rmse_linear_10)
+cat("Mean RMSE for na.linear method with Gap Value of 10 is ",mean_rmse_linear_10, "thats is, ",mean_rmse_linear_10*100,"%\n\n")
+mean_ioa_linear_10 = mean(ioa_linear_10)
+cat("Mean IOA for na.linear method with Gap Value of 10 is ",mean_ioa_linear_10, "thats is, ",mean_ioa_linear_10*100,"%\n\n")
+mean_mad_linear_10 = mean(mad_linear_10)
+cat("Mean MAD for na.linear method with Gap Value of 10 is ",mean_mad_linear_10,"\n\n")
+mad_linear = c(mad_linear,mean_mad_linear_10)
+frac_bias_linear = c(frac_bias_linear,mean_fractional_bias_linear_10)
+rmse_linear = c(rmse_linear,mean_rmse_linear_10)
+ioa_linear = c(ioa_linear, mean_ioa_linear_10)
+rm(temp1)
+rm(temp2)
+rm(temp3)
+rm(temp4)
+rm(x)
+rm(i)
+rm(j)
+```
+
+###########################################################################################################
+
+Method = {imputeTS} linear
+Gap = 20
+Non-diabete "1636-69-048"
+
+```{r}
+non_dia = subset(series, series[,3] == "1636-69-048")
+```
+
+
+```{r}
+mad_linear_20 = c()
+fractional_bias_linear_20 = c()
+rmse_linear_20 = c()
+ioa_linear_20 = c()
+```
+
+```{r}
+for (i in seed_points) { 
+  series_new = non_dia
+  for (j in 0:19) { 
+    series_new$GlucoseValue[i+j] = NA
+  }
+  series_new$GlucoseValue = na_interpolation(unfactor(series_new$GlucoseValue), option = "linear", maxgap = Inf)
+    
+  #calculating mean absolute difference
+  temp1 = mad(series_new$GlucoseValue)
+  mad_linear_20 = c(mad_linear_20,temp1)
+    
+  #calculating fractional bias
+  temp2 = compute.fb(series_new$GlucoseValue, unfactor(non_dia$GlucoseValue))
+  fractional_bias_linear_20 = c(fractional_bias_linear_20, temp2)
+    
+  #calculating RMSE
+  temp3 = compute.rmse(series_new$GlucoseValue, unfactor(non_dia$GlucoseValue))
+  rmse_linear_20 = c(rmse_linear_20,temp3)
+  
+  #calculatind IOA
+  x = data.frame("real" = unfactor(non_dia$GlucoseValue), 'imputed' = series_new$GlucoseValue)
+  temp4 = modStats(x,mod = "imputed",obs = "real", statistic = c("IOA"))
+  ioa_linear_20 = c(ioa_linear_20, temp4$IOA)
+}
+```
+
+```{r}
+mean_fractional_bias_linear_20 = mean(fractional_bias_linear_20)
+cat("Mean Fractional Bias for na.linear method with Gap Value of 20 is ",mean_fractional_bias_linear_20, "thats is, ",mean_fractional_bias_linear_20*100,"%\n\n")
+mean_rmse_linear_20 = mean(rmse_linear_20)
+cat("Mean RMSE for na.linear method with Gap Value of 20 is ",mean_rmse_linear_20, "thats is, ",mean_rmse_linear_20*100,"%\n\n")
+mean_ioa_linear_20 = mean(ioa_linear_20)
+cat("Mean IOA for na.linear method with Gap Value of 20 is ",mean_ioa_linear_20, "thats is, ",mean_ioa_linear_20*100,"%\n\n")
+mean_mad_linear_20 = mean(mad_linear_20)
+cat("Mean MAD for na.linear method with Gap Value of 20 is ",mean_mad_linear_20,"\n\n")
+mad_linear = c(mad_linear,mean_mad_linear_20)
+frac_bias_linear = c(frac_bias_linear,mean_fractional_bias_linear_20)
+rmse_linear = c(rmse_linear,mean_rmse_linear_20)
+ioa_linear = c(ioa_linear, mean_ioa_linear_20)
+rm(temp1)
+rm(temp2)
+rm(temp3)
+rm(temp4)
+rm(x)
+rm(i)
+rm(j)
+```
+
+###########################################################################################################
+
+Method = {imputeTS} linear
+Gap = 25
+Non-diabete "1636-69-048"
+
+```{r}
+non_dia = subset(series, series[,3] == "1636-69-048")
+```
+
+
+```{r}
+mad_linear_25 = c()
+fractional_bias_linear_25 = c()
+rmse_linear_25 = c()
+ioa_linear_25 = c()
+```
+
+```{r}
+for (i in seed_points) { 
+  series_new = non_dia
+  for (j in 0:24) { 
+    series_new$GlucoseValue[i+j] = NA
+  }
+  series_new$GlucoseValue = na_interpolation(unfactor(series_new$GlucoseValue), option = "linear", maxgap = Inf)
+    
+  #calculating mean absolute difference
+  temp1 = mad(series_new$GlucoseValue)
+  mad_linear_25 = c(mad_linear_25,temp1)
+    
+  #calculating fractional bias
+  temp2 = compute.fb(series_new$GlucoseValue, unfactor(non_dia$GlucoseValue))
+  fractional_bias_linear_25 = c(fractional_bias_linear_25, temp2)
+    
+  #calculating RMSE
+  temp3 = compute.rmse(series_new$GlucoseValue, unfactor(non_dia$GlucoseValue))
+  rmse_linear_25 = c(rmse_linear_25,temp3)
+  
+  #calculatind IOA
+  x = data.frame("real" = unfactor(non_dia$GlucoseValue), 'imputed' = series_new$GlucoseValue)
+  temp4 = modStats(x,mod = "imputed",obs = "real", statistic = c("IOA"))
+  ioa_linear_25 = c(ioa_linear_25, temp4$IOA)
+}
+```
+
+```{r}
+mean_fractional_bias_linear_25 = mean(fractional_bias_linear_25)
+cat("Mean Fractional Bias for na.linear method with Gap Value of 25 is ",mean_fractional_bias_linear_25, "thats is, ",mean_fractional_bias_linear_25*100,"%\n\n")
+mean_rmse_linear_25 = mean(rmse_linear_25)
+cat("Mean RMSE for na.linear method with Gap Value of 25 is ",mean_rmse_linear_25, "thats is, ",mean_rmse_linear_25*100,"%\n\n")
+mean_ioa_linear_25 = mean(ioa_linear_25)
+cat("Mean IOA for na.linear method with Gap Value of 25 is ",mean_ioa_linear_25, "thats is, ",mean_ioa_linear_25*100,"%\n\n")
+mean_mad_linear_25 = mean(mad_linear_25)
+cat("Mean MAD for na.linear method with Gap Value of 25 is ",mean_mad_linear_25,"\n\n")
+mad_linear = c(mad_linear,mean_mad_linear_25)
+frac_bias_linear = c(frac_bias_linear,mean_fractional_bias_linear_25)
+rmse_linear = c(rmse_linear,mean_rmse_linear_25)
+ioa_linear = c(ioa_linear, mean_ioa_linear_25)
+rm(temp1)
+rm(temp2)
+rm(temp3)
+rm(temp4)
+rm(x)
+rm(i)
+rm(j)
+```
+
+
+###########################################################################################################
+
+Method = {imputeTS} linear
+Gap = 50
+Non-diabete "1636-69-048"
+
+```{r}
+non_dia = subset(series, series[,3] == "1636-69-048")
+```
+
+
+```{r}
+mad_linear_50 = c()
+fractional_bias_linear_50 = c()
+rmse_linear_50 = c()
+ioa_linear_50 = c()
+```
+
+```{r}
+for (i in seed_points) { 
+  series_new = non_dia
+  for (j in 0:49) { 
+    series_new$GlucoseValue[i+j] = NA
+  }
+  series_new$GlucoseValue = na_interpolation(unfactor(series_new$GlucoseValue), option = "linear", maxgap = Inf)
+    
+  #calculating mean absolute difference
+  temp1 = mad(series_new$GlucoseValue)
+  mad_linear_50 = c(mad_linear_50,temp1)
+    
+  #calculating fractional bias
+  temp2 = compute.fb(series_new$GlucoseValue, unfactor(non_dia$GlucoseValue))
+  fractional_bias_linear_50 = c(fractional_bias_linear_50, temp2)
+    
+  #calculating RMSE
+  temp3 = compute.rmse(series_new$GlucoseValue, unfactor(non_dia$GlucoseValue))
+  rmse_linear_50 = c(rmse_linear_50,temp3)
+  
+  #calculatind IOA
+  x = data.frame("real" = unfactor(non_dia$GlucoseValue), 'imputed' = series_new$GlucoseValue)
+  temp4 = modStats(x,mod = "imputed",obs = "real", statistic = c("IOA"))
+  ioa_linear_50 = c(ioa_linear_50, temp4$IOA)
+}
+```
+
+```{r}
+mean_fractional_bias_linear_50 = mean(fractional_bias_linear_50)
+cat("Mean Fractional Bias for na.linear method with Gap Value of 50 is ",mean_fractional_bias_linear_50, "thats is, ",mean_fractional_bias_linear_50*100,"%\n\n")
+mean_rmse_linear_50 = mean(rmse_linear_50)
+cat("Mean RMSE for na.linear method with Gap Value of 50 is ",mean_rmse_linear_50, "thats is, ",mean_rmse_linear_50*100,"%\n\n")
+mean_ioa_linear_50 = mean(ioa_linear_50)
+cat("Mean IOA for na.linear method with Gap Value of 50 is ",mean_ioa_linear_50, "thats is, ",mean_ioa_linear_50*100,"%\n\n")
+mean_mad_linear_50 = mean(mad_linear_50)
+cat("Mean MAD for na.linear method with Gap Value of 50 is ",mean_mad_linear_50,"\n\n")
+mad_linear = c(mad_linear,mean_mad_linear_50)
+frac_bias_linear = c(frac_bias_linear,mean_fractional_bias_linear_50)
+rmse_linear = c(rmse_linear,mean_rmse_linear_50)
+ioa_linear = c(ioa_linear, mean_ioa_linear_50)
+rm(temp1)
+rm(temp2)
+rm(temp3)
+rm(temp4)
+rm(x)
+rm(i)
+rm(j)
+```
+
+
+###########################################################################################################
+
+Method = {imputeTS} linear
+Gap = 100
+Non-diabete "1636-69-048"
+
+```{r}
+non_dia = subset(series, series[,3] == "1636-69-048")
+```
+
+
+```{r}
+mad_linear_100 = c()
+fractional_bias_linear_100 = c()
+rmse_linear_100 = c()
+ioa_linear_100 = c()
+```
+
+```{r}
+for (i in seed_points) { 
+  series_new = non_dia
+  for (j in 0:99) { 
+    series_new$GlucoseValue[i+j] = NA
+  }
+  series_new$GlucoseValue = na_interpolation(unfactor(series_new$GlucoseValue), option = "linear", maxgap = Inf)
+    
+  #calculating mean absolute difference
+  temp1 = mad(series_new$GlucoseValue)
+  mad_linear_100 = c(mad_linear_100,temp1)
+    
+  #calculating fractional bias
+  temp2 = compute.fb(series_new$GlucoseValue, unfactor(non_dia$GlucoseValue))
+  fractional_bias_linear_100 = c(fractional_bias_linear_100, temp2)
+    
+  #calculating RMSE
+  temp3 = compute.rmse(series_new$GlucoseValue, unfactor(non_dia$GlucoseValue))
+  rmse_linear_100 = c(rmse_linear_100,temp3)
+  
+  #calculatind IOA
+  x = data.frame("real" = unfactor(non_dia$GlucoseValue), 'imputed' = series_new$GlucoseValue)
+  temp4 = modStats(x,mod = "imputed",obs = "real", statistic = c("IOA"))
+  ioa_linear_100 = c(ioa_linear_100, temp4$IOA)
+}
+```
+
+```{r}
+mean_fractional_bias_linear_100 = mean(fractional_bias_linear_100)
+cat("Mean Fractional Bias for na.linear method with Gap Value of 100 is ",mean_fractional_bias_linear_100, "thats is, ",mean_fractional_bias_linear_100*100,"%\n\n")
+mean_rmse_linear_100 = mean(rmse_linear_100)
+cat("Mean RMSE for na.linear method with Gap Value of 100 is ",mean_rmse_linear_100, "thats is, ",mean_rmse_linear_100*100,"%\n\n")
+mean_ioa_linear_100 = mean(ioa_linear_100)
+cat("Mean IOA for na.linear method with Gap Value of 100 is ",mean_ioa_linear_100, "thats is, ",mean_ioa_linear_100*100,"%\n\n")
+mean_mad_linear_100 = mean(mad_linear_100)
+cat("Mean MAD for na.linear method with Gap Value of 100 is ",mean_mad_linear_100,"\n\n")
+mad_linear = c(mad_linear,mean_mad_linear_100)
+frac_bias_linear = c(frac_bias_linear,mean_fractional_bias_linear_100)
+rmse_linear = c(rmse_linear,mean_rmse_linear_100)
+ioa_linear = c(ioa_linear, mean_ioa_linear_100)
+rm(temp1)
+rm(temp2)
+rm(temp3)
+rm(temp4)
+rm(x)
+rm(i)
+rm(j)
+```
+
+na.linear final values
+```{r}
+mad_linear
+frac_bias_linear
+rmse_linear
+ioa_linear
+```
+
