@@ -1,0 +1,172 @@
+---
+title: "jupyter"
+output: html_document
+---
+install packages
+```{r}
+#devtools::install_github("rstudio/keras")
+#library(keras)
+#library(rnn)
+#library(dplyr)
+#library(tensorflow)
+#library(varhandle)
+#install_tensorflow()
+```
+
+install tensorflow
+```{r}
+#pip install virtualenv (terminal)
+#virtualenv python
+#source python/bin/activate
+#pip install numpy pandas matplotlib
+#install.packages("reticulate") (console)
+#Sys.setenv(RETICULATE_PYTHON = "python/bin/python")
+#reticulate::py_config()
+#install_tensorflow()
+```
+
+
+Training LSTM model
+input: train: training dataframe
+output: lstm_model: trainied lstm model
+```{r}
+lag_transform <- function(x, k= 1){
+    
+      lagged =  c(rep(NA, k), x[1:(length(x)-k)])
+      DF = as.data.frame(cbind(lagged, x))
+      colnames(DF) <- c( paste0('x-', k), 'x')
+      DF[is.na(DF)] <- 0
+      return(DF)
+}
+train = lag_transform(train_set, 1)
+head(train)
+
+# scale data
+scale_data <- function(train, feature_range = c(0, 1)) {
+  x = train
+  fr_min = feature_range[1]
+  fr_max = feature_range[2]
+  std_train = ((x - min(x) ) / (max(x) - min(x)  ))
+  #std_test  = ((test - min(x) ) / (max(x) - min(x)  ))
+  
+  scaled_train = std_train *(fr_max -fr_min) + fr_min
+  #scaled_test = std_test *(fr_max -fr_min) + fr_min
+  
+  return(list(scaled_train = as.vector(scaled_train) ,scaler= c(min =min(x), max = max(x))) )
+  
+}
+
+scaled = scale_data(train,c(-1, 1))
+x_train = scaled$scaled_train[, 1]
+y_train = scaled$scaled_train[, 2]
+
+#revert the predicted values to the original scale.
+invert_scaling <- function(scaled, scaler, feature_range = c(0, 1)){
+  min = scaler[1]
+  max = scaler[2]
+  t = length(scaled)
+  mins = feature_range[1]
+  maxs = feature_range[2]
+  inverted_dfs = numeric(t)
+  
+  for( i in 1:t){
+    X = (scaled[i]- mins)/(maxs - mins)
+    rawValues = X *(max - min) + min
+    inverted_dfs[i] <- rawValues
+  }
+  return(inverted_dfs)
+}
+
+```
+
+trainModel
+```{r}
+trainModel <- function(input_data) {
+  #train_set = trainingData()
+  train = lag_transform(train_set, 1)
+  scaled = scale_data(train, c(-1, 1))
+  x_train = scaled$scaled_train[, 1]
+  y_train = scaled$scaled_train[, 2]
+  
+  # Reshape the input to 3-dim
+  dim(x_train) <- c(length(x_train), 1, 1)
+
+  # specify required arguments
+  x_shape2 = dim(x_train)[2]
+  x_shape3 = dim(x_train)[3]
+  batch_size = 1               
+  units = 1  
+  
+  lstm_model = keras_model_sequential() 
+  lstm_model %>% layer_lstm(units = 1, batch_input_shape = c(batch_size, x_shape2, x_shape3), stateful= TRUE)  %>% layer_dense(units = 1)
+  
+  lstm_model %>% compile(
+  loss = 'mean_squared_error',
+  optimizer = optimizer_adam(),  
+  metrics = c('accuracy')
+  )
+  
+  #fit the model
+  epochs = 10   
+  for(i in 1:epochs ){
+    lstm_model %>% fit(x_train, y_train, epochs=1, batch_size = batch_size, verbose=1, shuffle=FALSE)
+    lstm_model %>% reset_states()
+  }
+  
+  #make predic
+  return(lstm_model)
+}
+```
+
+
+
+training data
+```{r}
+trainingData <- function() {
+  data = read.delim("~/Desktop/dataset.s010")
+  
+  #dropping rows we will use for testing
+  #data.drop(index=['1636-69-001','1636-69-114','1636-69-028'])
+  #dropping three rows for diabetic, non-diabetic and prediabetic
+  vc = c('1636-69-001','1636-69-114','1636-69-028')
+  data = data[!(data$subjectId %in% vc),]
+  
+  #dropping columns that are not relevant for prediction
+  data = subset(data, select = -c(subjectId, InternalTime))
+  
+  #Converting the Display Time to 'datetime'
+  data$DisplayTime <- as.POSIXct(data$DisplayTime, format = '%Y-%m-%d %H:%M:%S')
+  
+  return(unfactor(data$GlucoseValue))
+}
+```
+
+testing data
+```{r}
+testingData <- function() {
+  data = read.delim("~/Desktop/dataset.s010")
+  
+  #creating test sets for each case
+  diabetic = data[data$subjectId == "1636-69-001"]
+  prediabetic = data[data$subjectId == "1636-69-114"]
+  non_diabetic = data[data$subjectId == "1636-69-028"]
+  
+  #dropping columns that are not relevant for prediction
+  diabetic = subset(diabetic, select = -c(subjectId, InternalTime))
+  prediabetic = subset(prediabetic, select = -c(subjectId, InternalTime))
+  non_diabetic = subset(non_diabetic, select = -c(subjectId, InternalTime))
+  
+  #Converting the Display Time to 'datetime'
+  diabetic$DisplayTime <- as.POSIXct(diabetic$DisplayTime, format = '%Y-%m-%d %H:%M:%S')
+  prediabetic$DisplayTime <- as.POSIXct(prediabetic$DisplayTime, format = '%Y-%m-%d %H:%M:%S')
+  non_diabetic$DisplayTime <- as.POSIXct(non_diabetic$DisplayTime, format = '%Y-%m-%d %H:%M:%S')
+  
+}
+```
+
+```{r}
+train_set = as.numeric(trainingData())
+#print(train_set)
+lstmModel = trainModel(train_set)
+```
+
