@@ -1,0 +1,206 @@
+---
+title: "lstm"
+author: "Sophia Ding"
+date: "3/31/2020"
+output: html_document
+---
+```{r}
+library(varhandle)
+library(recipes)
+library(dplyr)
+library(tibble)
+library(tibbletime)
+library(tidyr)
+library(keras)
+library(kerasR)
+library(reticulate)
+library(rnn)
+library(tensorflow)
+```
+
+scale data
+```{r}
+scale_data <- function(inputdata, feature_range = c(0, 1)) {
+  output = inputdata
+  x = output[,2]
+  fr_min = feature_range[1]
+  fr_max = feature_range[2]
+  std_data = ((x - min(x) ) / (max(x) - min(x)  ))
+
+  scaled = std_data *(fr_max -fr_min) + fr_min
+  scaled = as.vector(scaled)
+  output[,2] = scaled
+  
+  return(output)
+  
+}
+
+```
+
+lag transform
+```{r}
+lag_transform <- function(x, k= 1){
+    
+      lagged =  c(rep(NA, k), x[1:(length(x)-k)])
+      DF = as.data.frame(cbind(lagged, x))
+      colnames(DF) <- c( paste0('x-', k), 'x')
+      DF[is.na(DF)] <- 0
+      return(DF)
+}
+
+```
+
+training data
+```{r}
+trainingData <- function() {
+  data = read.delim("~/Desktop/dataset.s010")
+  vc = c('1636-69-001','1636-69-114','1636-69-028')
+  data <- data[!(data$subjectId %in% vc),]
+  
+  #dropping columns that are not relevant for prediction
+  train <- subset(data, select = -c(subjectId, InternalTime))
+  
+  #Converting the Display Time to 'datetime'
+  train$DisplayTime <- as.POSIXct(train$DisplayTime, format = '%Y-%m-%d %H:%M:%S')
+  train$GlucoseValue <- as.numeric(train$GlucoseValue)
+
+  train <- train[!((train$GlucoseValue) == 'Low'),]
+  return(train)
+}
+```
+
+
+train model 
+```{r}
+trainModel <- function(inputdata) {
+  train_scaled = scale_data(inputdata)
+  train_lag <- as_tibble(train_scaled)
+  train_lag <- train_lag %>%
+    mutate(value_lag = lag(GlucoseValue, n = 1))
+
+  x_train_vec <- train_lag$value_lag[-1]
+  x_train_arr <- array(data = x_train_vec, dim = c(length(x_train_vec), 1, 1))
+
+  y_train_vec <- train_lag$GlucoseValue[-nrow(train_lag)]
+  y_train_arr <- array(data = y_train_vec, dim = c(length(y_train_vec), 1))
+  
+  tsteps       <- 1
+
+
+  model <- keras_model_sequential()
+  model %>%
+    layer_lstm(units            = 7, 
+               input_shape      = c(tsteps, 1),
+               batch_size = 1,
+               activation = 'relu',
+               kernel_initializer = "lecun_uniform",
+               return_sequences = TRUE,
+               stateful = TRUE) %>% 
+    layer_dense(units = 1)
+
+  model %>% 
+    compile(loss = 'mean_squared_error', optimizer = 'adam')
+  
+    model %>% fit(x          = x_train_arr, 
+                  y          = y_train_arr, 
+                  batch_size = 1,
+                  epochs     = 10, 
+                  verbose    = 1, 
+                  shuffle    = FALSE,
+                  callbacks =callback_early_stopping(monitor = "loss", patience = 2, verbose=1))
+    
+
+  return(model)
+  
+}
+```
+
+test model
+```{r}
+testModel <- function(inputdata) {
+  test_scaled = scale_data(inputdata)
+  test_lag <- as_tibble(test_scaled)
+  
+  test_lag <- test_lag %>%
+    mutate(value_lag = lag(GlucoseValue, n = 1))
+
+  x_test_vec <- test_lag$value_lag
+  x_test_arr <- array(data = x_test_vec, dim = c(length(x_test_vec), 1, 1))
+
+  #y_test_vec <- test_lag$GlucoseValue
+  #y_test_arr <- array(data = y_test_vec, dim = c(length(y_test_vec), 1))
+  
+  pred <- lstmModel %>% 
+    predict(x_test_arr, batch_size = 1) %>%
+    .[,,1]
+  
+  return(pred)
+}
+```
+
+
+```{r}
+train_set = trainingData()
+lstmModel = trainModel(train_set)
+
+```
+
+test
+```{r}
+data = read.delim("~/Desktop/dataset.s010")
+
+diabetic = unfactor(subset(data, data$subjectId == "1636-69-001")[,1:2])
+prediabetic = unfactor(subset(data,data$subjectId == "1636-69-114")[,1:2])
+non_diabetic = unfactor(subset(data,data$subjectId == "1636-69-028")[,1:2])
+
+diabetic2 = unfactor(subset(data, data$subjectId == "1636-69-001")[,1:2])
+prediabetic2 = unfactor(subset(data,data$subjectId == "1636-69-114")[,1:2])
+non_diabetic2 = unfactor(subset(data,data$subjectId == "1636-69-028")[,1:2])
+
+View(diabetic)
+```
+
+```{r}
+createGap <- function(data) {
+  start = sample(500:nrow(data)-500, 1, replace = FALSE)
+  return(start)
+}
+
+faultyData <- function(df,start,end) {
+
+    for (i in start:end) {
+        df[i,2] <- 0
+    }
+    
+    return(df)
+}
+```
+
+dia
+```{r}
+start = createGap(diabetic)
+end = start+500
+gap_tester_diabetic = diabetic[start:end+2,]
+diabetic2 = faultyData(diabetic2,start,end+1)
+
+pred_d = testModel(diabetic2)
+```
+pre dia
+```{r}
+start = createGap(prediabetic)
+end = start+500
+gap_tester_prediabetic = prediabetic[start:end+2,]
+prediabetic2 = faultyData(prediabetic2,start,end+1)
+
+pred_pd = testModel(prediabetic2)
+```
+non dia
+```{r}
+start = createGap(non_diabetic)
+end = start+500
+gap_tester_nondiabetic = non_diabetic[start:end+2,]
+non_diabetic2 = faultyData(non_diabetic2,start,end+1)
+
+pred_nd = testModel(non_diabetic2)
+```
+
