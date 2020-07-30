@@ -1,0 +1,2 @@
+ID,numValidDays,meanmadPerDay,meanProportionLowPerDay,meanProportionNormalPerDay,meanProportionHighPerDay,meanAUCperDay,meanSGVPPerDay,meanFastingProxyPerDay,hasInvalidDeviations
+predia,3,0.499228313888889,0,1,0,5.86128294789021,0.418764215324963,4.71051436999321,TRUE

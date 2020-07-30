@@ -1,0 +1,91 @@
+---
+title: "gluvarpro"
+author: "Sophia Ding"
+date: "6/25/2020"
+output: html_document
+---
+```{r}
+dataset <- read.delim("~/Desktop/dataset.s010")
+dataset$day <- as.Date(dataset$DisplayTime)
+
+pre = subset(dataset, dataset$subjectId == "1636-69-032")
+pre$day = as.character(pre$day)
+d = c('2016-01-14', '2016-01-15', '2016-01-16', '2016-01-17', '2016-01-18')
+prediabetic  = pre[pre$day %in% d,]
+
+prediabetic$DisplayTime = unfactor(prediabetic$DisplayTime)
+prediabetic$GlucoseValue = unfactor(prediabetic$GlucoseValue)
+
+t = strptime(prediabetic$DisplayTime, format = '%Y-%m-%d %H:%M:%S')
+
+prediabetic$date = format(t, '%Y/%m/%d')
+prediabetic$time = format(t, '%H:%M:%S')
+prediabetic$glucose = prediabetic$GlucoseValue
+
+prediabetic_reformat = prediabetic[,6:8]
+#colnames(prediabetic_reformat) = c('timestamp', 'sensorglucose')
+
+prediabetic_reformat
+```
+
+```{r}
+df = adrrgvp(prediabetic_reformat, t = 24)
+mean(unique(df$adrr))
+```
+```{r}
+df = aucgvp(prediabetic_reformat, t = 24, tdown = 70, tup = 180)
+mean(unique(df$auc))
+```
+```{r}
+avggvp(prediabetic_reformat, var = "glucose", sd = FALSE)
+```
+
+```{r}
+df = bgigvp(prediabetic_reformat, t = 24)
+mean(unique(df$bgi))
+mean(unique(df$lbgi))
+mean(unique(df$hbgi))
+```
+```{r}
+chargvp(prediabetic_reformat)
+```
+
+```{r}
+df = congagvp(prediabetic_reformat, t = 24, ts = 5, h = 4)
+mean(unique(df$conga))
+```
+```{r}
+df = cvgvp(prediabetic_reformat, t = 24)
+mean(unique(df$cv))
+```
+```{r}
+df = jigvp(prediabetic_reformat, t = 24)
+mean(unique(df$ji))
+```
+```{r}
+df = ligvp(prediabetic_reformat, t = 24, ts = 5)
+mean(unique(df$li))
+```
+
+```{r}
+df = iqrgvp(prediabetic_reformat, t = 24)
+mean(unique(df$iqr))
+```
+
+```{r}
+df = magegvp(prediabetic_reformat, t = 24, n = 1)
+mean(unique(df$mage))
+```
+```{r}
+df = meangvp(prediabetic_reformat, t = 24)
+mean(unique(df$mean))
+```
+```{r}
+df = mvgvp(prediabetic_reformat, t = 24, gi = 120)
+mean(unique(df$mv))
+```
+```{r}
+df = sdgvp(prediabetic_reformat, t = 24)
+mean(unique(df$sd))
+```
+
