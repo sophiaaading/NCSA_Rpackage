@@ -1,0 +1,65 @@
+---
+title: "cgmanalysis"
+author: "Sophia Ding"
+date: "6/25/2020"
+output: html_document
+---
+
+```{r}
+dataset <- read.delim("~/Desktop/dataset.s010")
+dataset 
+```
+
+```{r}
+dataset$day <- as.Date(dataset$DisplayTime)
+
+pr = subset(dataset, dataset$subjectId == "1636-69-032")
+pre$day = as.character(pre$day)
+d = c('2016-01-14', '2016-01-15', '2016-01-16', '2016-01-17', '2016-01-18')
+prediabetic  = pre[pre$day %in% d,]
+
+prediabetic$DisplayTime = unfactor(prediabetic$DisplayTime)
+prediabetic$GlucoseValue = unfactor(prediabetic$GlucoseValue)
+t = strptime(prediabetic$DisplayTime, format = '%Y-%m-%d %H:%M:%S')
+prediabetic$DisplayTime = format(t,  '%d/%m/%Y %H:%M')
+
+prediabetic_reformat = prediabetic[,1:2]
+colnames(prediabetic_reformat) = c('timestamp', 'sensorglucose')
+
+prediabetic_reformat
+
+write.xlsx(prediabetic_reformat,file = "~/Desktop/prediabetic_reformat.xlsx")
+```
+
+```{r}
+inputdirectory = '/Users/yuxiding/Desktop/cgm_pre'
+outputdirectory = '/Users/yuxiding/Desktop/cgm_pre'
+
+#cgmreport(inputdirectory, outputdirectory,tz = "UTC",yaxis = c(0,400))
+
+cgmvariables(inputdirectory,
+                         outputdirectory,
+                         outputname = "REDCap Upload",
+                         customintervals = list(c(250,400)),
+                         aboveexcursionlength = 35,
+                         belowexcursionlength = 10,
+                         magedef = "1sd",
+                         congan = 24,
+                         daystart = 6,
+                         dayend = 22,
+                         id_filename = F,
+                         format = "rows",
+                         printname = F)
+```
+```{r}
+inputdirectory = '/Users/yuxiding/Desktop/cgm_pre'
+outputdirectory = '/Users/yuxiding/Desktop/cgm_pre'
+cleandata(inputdirectory,
+                      outputdirectory,
+                      removegaps = TRUE,
+                      gapfill = TRUE,
+                      maximumgap = 20,
+                      id_filename = F,
+                      verbose = F)
+```
+
